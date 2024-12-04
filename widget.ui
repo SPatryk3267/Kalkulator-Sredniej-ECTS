@@ -136,7 +136,7 @@
                <item>
                 <widget class="QLabel" name="meanResultSemesterOneLabel">
                  <property name="text">
-                  <string>0</string>
+                  <string/>
                  </property>
                 </widget>
                </item>
@@ -242,7 +242,7 @@
                <item>
                 <widget class="QLabel" name="meanResultSemesterTwoLabel">
                  <property name="text">
-                  <string>0</string>
+                  <string/>
                  </property>
                 </widget>
                </item>
@@ -282,7 +282,7 @@
              <item>
               <widget class="QLabel" name="meanResultSemesterBothLabel">
                <property name="text">
-                <string>0</string>
+                <string/>
                </property>
               </widget>
              </item>
