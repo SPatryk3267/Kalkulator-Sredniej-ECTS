@@ -16,9 +16,6 @@ Widget::Widget(QWidget *parent)
         semesterOne.add(subject());
         semesterTwo.add(subject());
     }
-    qDebug() << 1;
-
-
 
 }
 
@@ -42,9 +39,12 @@ void Widget::on_semesterOneAddButton_clicked()
 
 void Widget::on_semesterOneDeleteButton_clicked()
 {
-    semesterOne.remove(ui->semesterOneTable->currentRow());
-    ui->semesterOneTable->removeRow(ui->semesterOneTable->currentRow());
-    update_mean();
+    qDebug() << ui->semesterOneTable->currentRow();
+    if(ui->semesterOneTable->rowCount() > 0 && ui->semesterOneTable->currentRow() >= 0){
+        semesterOne.remove(ui->semesterOneTable->currentRow());
+        ui->semesterOneTable->removeRow(ui->semesterOneTable->currentRow());
+        update_mean();
+    }
 }
 
 
@@ -57,9 +57,11 @@ void Widget::on_semesterTwoAddButton_clicked()
 
 void Widget::on_semesterTwoDeleteButton_clicked()
 {
-    semesterTwo.remove(ui->semesterTwoTable->currentRow());
-    ui->semesterTwoTable->removeRow(ui->semesterTwoTable->currentRow());
-    update_mean();
+    if(ui->semesterTwoTable->rowCount() > 0&& ui->semesterTwoTable->currentRow() >= 0){
+        semesterTwo.remove(ui->semesterTwoTable->currentRow());
+        ui->semesterTwoTable->removeRow(ui->semesterTwoTable->currentRow());
+        update_mean();
+    }
 }
 
 void Widget::on_semesterOneTable_cellChanged(int row, int column)
@@ -79,7 +81,6 @@ void Widget::on_semesterOneTable_cellChanged(int row, int column)
     case 2:
         if(ui->semesterOneTable->item(row, column)){
             semesterOne[row].grade() = ui->semesterOneTable->item(row, column)->text().toFloat();
-            qDebug() << "OCENA" << semesterOne[row].grade();
         }
         break;
     }

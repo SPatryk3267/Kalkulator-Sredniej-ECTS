@@ -14,8 +14,8 @@ public:
     const QString& name() const{ return mName; }
     float& ects(){ return mEcts; }
     const float& ects() const{ return mEcts; }\
-    float& grade(){ return mEcts; }
-    const float& grade() const{ return mEcts; }
+    float& grade(){ return mGrade; }
+    const float& grade() const{ return mGrade; }
 
 private:
     QString mName {""};
