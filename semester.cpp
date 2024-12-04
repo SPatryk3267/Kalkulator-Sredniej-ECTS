@@ -31,7 +31,7 @@ void semester::remove(const subject& sub){
 }
 
 
-float semester::mean(){
+const float semester::mean() const{
 
     float gradeSum{};
     float ectsSum{};
@@ -41,7 +41,7 @@ float semester::mean(){
         ectsSum += mSubjects.at(i).ects();
     }
 
-    return roundf((gradeSum / ectsSum) * 100) / 100;
+    return gradeSum / ectsSum;
 
 }
 

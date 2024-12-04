@@ -13,7 +13,7 @@ public:
     void add(const subject& sub);
     void remove(size_t index);
     void remove(const subject& sub);
-    float mean();
+    const float mean() const;
 
 private:
     QVector<subject> mSubjects;
