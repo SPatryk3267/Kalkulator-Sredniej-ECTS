@@ -17,12 +17,10 @@ public:
     float& grade(){ return mEcts; }
     const float& grade() const{ return mEcts; }
 
-    const float gradeTimesEcts() const{ return mGrade * mEcts; }
-
 private:
-    QString mName;
-    float mEcts;
-    float mGrade;
+    QString mName {""};
+    float mEcts {};
+    float mGrade {};
 };
 
 #endif // SUBJECT_H
