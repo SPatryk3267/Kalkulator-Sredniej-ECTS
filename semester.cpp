@@ -1,13 +1,10 @@
 #include "semester.h"
 #include <cmath>
+#include <QDebug>
 
 semester::semester() {}
 
 void semester::add(const subject& sub){
-
-    if (mSubjects.contains(sub)) {
-        throw std::invalid_argument("Subject already exists in the list");
-    }
 
     mSubjects.append(sub);
 
@@ -34,16 +31,26 @@ void semester::remove(const subject& sub){
 }
 
 
-float semester::mean(){
+const float semester::mean() const{
 
     float gradeSum{};
     float ectsSum{};
 
     for(size_t i{}; i < mSubjects.size(); i++){
-        gradeSum += mSubjects.at(i).gradeTimesEcts();
+        gradeSum += mSubjects.at(i).grade() * mSubjects.at(i).ects();
         ectsSum += mSubjects.at(i).ects();
     }
 
-    return (std::roundf((gradeSum / ectsSum) * 100) / 100);
+    return gradeSum / ectsSum;
 
+}
+
+subject& semester::operator[](size_t index){
+
+    return mSubjects[index];
+}
+
+const subject semester::operator[](size_t index) const{
+
+    return mSubjects[index];
 }

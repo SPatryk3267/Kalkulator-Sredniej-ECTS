@@ -14,15 +14,13 @@ public:
     const QString& name() const{ return mName; }
     float& ects(){ return mEcts; }
     const float& ects() const{ return mEcts; }\
-    float& grade(){ return mEcts; }
-    const float& grade() const{ return mEcts; }
-
-    const float gradeTimesEcts() const{ return mGrade * mEcts; }
+    float& grade(){ return mGrade; }
+    const float& grade() const{ return mGrade; }
 
 private:
-    QString mName;
-    float mEcts;
-    float mGrade;
+    QString mName {""};
+    float mEcts {};
+    float mGrade {};
 };
 
 #endif // SUBJECT_H

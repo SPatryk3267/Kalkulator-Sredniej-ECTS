@@ -2,6 +2,7 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include "semester.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -19,7 +20,11 @@ public:
 
 private slots:
 
-    void calculate_mean();
+    void update_total_mean();
+
+    void update_semester_one_mean();
+
+    void update_semester_two_mean();
 
     void on_semesterOneAddButton_clicked();
 
@@ -29,7 +34,13 @@ private slots:
 
     void on_semesterTwoDeleteButton_clicked();
 
+    void on_semesterOneTable_cellChanged(int row, int column);
+
+    void on_semesterTwoTable_cellChanged(int row, int column);
+
 private:
     Ui::Widget *ui;
+    semester semesterOne;
+    semester semesterTwo;
 };
 #endif // WIDGET_H
