@@ -41,22 +41,21 @@ Widget::~Widget()
 void Widget::setup_menu(QMenuBar* menu){
 
     QMenu *fileMenu = menu->addMenu("Plik");
+    QAction *fileLoadAction = new QAction("Wczytaj plik", this);
     QAction *fileSaveAction = new QAction("Zapisz plik", this);
     QAction *fileExitAction = new QAction("Zamknij", this);
+    fileMenu->addAction(fileLoadAction);
     fileMenu->addAction(fileSaveAction);
     fileMenu->addAction(fileExitAction);
 
 
     QMenu *editMenu = menu->addMenu("Edytuj");
-    QAction *editExitAction = new QAction("Zamknij", this);
-    editMenu->addAction(editExitAction);
 
     QMenu *viewMenu = menu->addMenu("Widok");
-    QAction *viewExitAction = new QAction("Zamknij", this);
-    viewMenu->addAction(viewExitAction);
 
     connect(fileExitAction, &QAction::triggered, this, &QWidget::close);
     connect(fileSaveAction, &QAction::triggered, this, &Widget::save_to_file);
+    connect(fileLoadAction, &QAction::triggered, this, &Widget::load_from_file);
 
 
     menu->setStyleSheet("QMenuBar { background-color: #F1F0F1; }"
@@ -107,6 +106,103 @@ bool Widget::save_to_file(){
     return 1;
 }
 
+bool Widget::load_from_file(){
+    QString filePath = QFileDialog::getOpenFileName(
+        this,
+        "Wczytaj plik",
+        "",
+        "Pliki csv (*.csv);;Wszystkie pliki (*.*)"
+        );
+
+    if(filePath.isEmpty()){
+        QMessageBox::warning(this, "Ostrzeżenie!", "Plik nie został wczytany");
+        return 0;
+    }
+
+    QFile file(filePath);
+
+    if(!file.open(QIODevice::ReadOnly)){
+        QMessageBox::warning(this, "Ostrzeżenie!", "Błąd otwarcia pliku,\n nie mozna odczytać pliku");
+        file.close();
+        return 0;
+    }
+
+    QString line;
+    QTextStream fileIn(&file);
+
+    table_clear(ui->semesterOneTable, semesterOne);
+    table_clear(ui->semesterTwoTable, semesterTwo);
+
+    fileIn.readLineInto(&line); // we throw away first line beacause it contains column names
+
+    while(fileIn.readLineInto(&line)){
+        QStringList values = line.split(',');
+
+        if(values.length() != 4){
+            QMessageBox::warning(this, "Ostrzeżenie!", "Błąd wczytania pliku,\n zły format pliku wejściowego");
+            file.close();
+            return 0;
+        }
+
+
+        bool semesterCorrect, ectsCorrect, gradeCorrect;
+        int semester = values[0].toInt(&semesterCorrect);
+        QString subjectVal = values[1];
+        float ectsVal = values[2].toFloat(&ectsCorrect);
+        float gradeVal = values[3].toFloat(&gradeCorrect);
+
+        if(semesterCorrect && (semester == 1 || semester == 2) && ectsCorrect && gradeCorrect){
+            switch (semester) {
+            case 1:
+                semesterOne.add(subject(subjectVal, ectsVal, gradeVal));
+                break;
+            case 2:
+                semesterTwo.add(subject(subjectVal, ectsVal, gradeVal));
+                break;
+            }
+        }
+        else{
+            QMessageBox::warning(this, "Ostrzeżenie!", "Błąd wczytania pliku,\n złe dane wejsciowe");
+            file.close();
+            table_clear(ui->semesterOneTable, semesterOne);
+            table_clear(ui->semesterTwoTable, semesterTwo);
+            return 0;
+        }
+    }
+    ui->semesterOneTable->setRowCount(semesterOne.length());
+    ui->semesterTwoTable->setRowCount(semesterTwo.length());
+
+    ui->semesterOneTable->blockSignals(1);
+
+    for(size_t i{}; i < semesterOne.length(); i++){
+        if (!ui->semesterOneTable->item(i, 0)) ui->semesterOneTable->setItem(i, 0, new QTableWidgetItem());
+        if (!ui->semesterOneTable->item(i, 1)) ui->semesterOneTable->setItem(i, 1, new QTableWidgetItem());
+        if (!ui->semesterOneTable->item(i, 2)) ui->semesterOneTable->setItem(i, 2, new QTableWidgetItem());
+
+        ui->semesterOneTable->item(i, 0)->setText(semesterOne[i].name());
+        ui->semesterOneTable->item(i, 1)->setText(QString::number(semesterOne[i].ects()));
+        ui->semesterOneTable->item(i, 2)->setText(QString::number(semesterOne[i].grade()));
+    }
+
+    ui->semesterOneTable->blockSignals(0);
+
+    ui->semesterTwoTable->blockSignals(1);
+
+    for(size_t i{}; i < semesterTwo.length(); i++){
+        if (!ui->semesterTwoTable->item(i, 0)) ui->semesterTwoTable->setItem(i, 0, new QTableWidgetItem());
+        if (!ui->semesterTwoTable->item(i, 1)) ui->semesterTwoTable->setItem(i, 1, new QTableWidgetItem());
+        if (!ui->semesterTwoTable->item(i, 2)) ui->semesterTwoTable->setItem(i, 2, new QTableWidgetItem());
+
+        ui->semesterTwoTable->item(i, 0)->setText(semesterTwo[i].name());
+        ui->semesterTwoTable->item(i, 1)->setText(QString::number(semesterTwo[i].ects()));
+        ui->semesterTwoTable->item(i, 2)->setText(QString::number(semesterTwo[i].grade()));
+    }
+
+    ui->semesterTwoTable->blockSignals(0);
+
+    return 1;
+}
+
 QString Widget::round_to_two_decimal(float value){
     return QString::number(roundf((value) * 100) / 100);
 }
@@ -117,6 +213,11 @@ void Widget::update_total_mean(){
 
 }
 
+void Widget::table_clear(QTableWidget* table, semester& semester){
+    table->clear();
+    table->setRowCount(0);
+    semester.clear();
+}
 
 void Widget::update_semester_one_mean(){
 
@@ -141,7 +242,6 @@ void Widget::on_semesterOneAddButton_clicked()
 
 void Widget::on_semesterOneDeleteButton_clicked()
 {
-    qDebug() << ui->semesterOneTable->currentRow();
     if(ui->semesterOneTable->rowCount() > 0 && ui->semesterOneTable->currentRow() >= 0){
         semesterOne.remove(ui->semesterOneTable->currentRow());
         ui->semesterOneTable->removeRow(ui->semesterOneTable->currentRow());

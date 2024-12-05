@@ -34,6 +34,8 @@ private:
 
     void validate_and_set_cell(QTableWidget& table, semester& semester, int row, int column);
 
+    void table_clear(QTableWidget* table, semester& semester);
+
 
 
 private slots:
@@ -51,6 +53,9 @@ private slots:
     void on_semesterTwoTable_cellChanged(int row, int column);
 
     bool save_to_file();
+
+    bool load_from_file();
+
 private:
     Ui::Widget *ui;
     semester semesterOne;

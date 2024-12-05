@@ -7,6 +7,7 @@
 class semester
 {
 public:
+
     semester();
     subject& operator[](size_t index);
     const subject operator[](size_t index) const;
@@ -16,8 +17,15 @@ public:
     const float mean() const;
     QVector<subject>& subjects() { return mSubjects; }
     const QVector<subject>& subjects() const { return mSubjects; }
+    const size_t length() const { return subjectCount; }
+
+    void clear() {
+        mSubjects.clear();
+        subjectCount = 0;
+    }
 
 private:
+    size_t subjectCount;
     QVector<subject> mSubjects;
 };
 

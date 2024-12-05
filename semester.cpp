@@ -2,11 +2,12 @@
 #include <cmath>
 #include <QDebug>
 
-semester::semester() {}
+semester::semester() { subjectCount = 0; }
 
 void semester::add(const subject& sub){
 
     mSubjects.append(sub);
+    subjectCount += 1;
 
 }
 
@@ -17,6 +18,7 @@ void semester::remove(size_t index){
     }
 
     mSubjects.removeAt(index);
+    subjectCount -= 1;
 
 }
 
@@ -27,6 +29,7 @@ void semester::remove(const subject& sub){
     }
 
     mSubjects.removeOne(sub);
+    subjectCount -= 1;
 
 }
 
