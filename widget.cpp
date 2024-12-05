@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QString>
 #include <QLocale>
+#include <QSizePolicy>
 #include "semester.h"
 #include "subject.h"
 
@@ -11,6 +12,9 @@ Widget::Widget(QWidget *parent)
     , ui(new Ui::Widget)
 {
     ui->setupUi(this);
+
+    ui->semesterOneTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->semesterTwoTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     for(size_t i{}; i < 5; i++){
         semesterOne.add(subject());

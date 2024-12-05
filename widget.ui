@@ -65,6 +65,18 @@
              </item>
              <item>
               <widget class="QTableWidget" name="semesterOneTable">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::Shape::StyledPanel</enum>
+               </property>
+               <property name="lineWidth">
+                <number>1</number>
+               </property>
                <property name="rowCount">
                 <number>5</number>
                </property>
