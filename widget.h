@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QTableWidget>
+#include <QMenuBar>
 #include "semester.h"
 
 QT_BEGIN_NAMESPACE
@@ -21,7 +22,7 @@ public:
 
 
 private:
-    void setup_menu();
+    void setup_menu(QMenuBar* menu);
 
     void update_total_mean();
 

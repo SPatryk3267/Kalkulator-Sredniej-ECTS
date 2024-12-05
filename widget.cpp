@@ -27,7 +27,9 @@ Widget::Widget(QWidget *parent)
         semesterTwo.add(subject());
     }
 
-    setup_menu();
+    QMenuBar *menuBar = new QMenuBar(this);
+
+    setup_menu(menuBar);
 
 }
 
@@ -36,21 +38,20 @@ Widget::~Widget()
     delete ui;
 }
 
-void Widget::setup_menu(){
-    QMenuBar *menuBar = new QMenuBar(this);
+void Widget::setup_menu(QMenuBar* menu){
 
-    QMenu *fileMenu = menuBar->addMenu("Plik");
+    QMenu *fileMenu = menu->addMenu("Plik");
     QAction *fileSaveAction = new QAction("Zapisz plik", this);
     QAction *fileExitAction = new QAction("Zamknij", this);
     fileMenu->addAction(fileSaveAction);
     fileMenu->addAction(fileExitAction);
 
 
-    QMenu *editMenu = menuBar->addMenu("Edytuj");
+    QMenu *editMenu = menu->addMenu("Edytuj");
     QAction *editExitAction = new QAction("Zamknij", this);
     editMenu->addAction(editExitAction);
 
-    QMenu *viewMenu = menuBar->addMenu("Widok");
+    QMenu *viewMenu = menu->addMenu("Widok");
     QAction *viewExitAction = new QAction("Zamknij", this);
     viewMenu->addAction(viewExitAction);
 
@@ -58,9 +59,11 @@ void Widget::setup_menu(){
     connect(fileSaveAction, &QAction::triggered, this, &Widget::save_to_file);
 
 
-    menuBar->setStyleSheet("QMenuBar { background-color: lightgrey; }"
-                           "QMenuBar::item { padding: 5px; }"
-                           "QMenuBar::item:selected { background-color: lightblue; }");
+    menu->setStyleSheet("QMenuBar { background-color: #F1F0F1; }"
+                        "QMenuBar::item { padding: 5px; }"
+                        "QMenuBar::item:selected { background-color: lightblue; }");
+
+    ui->verticalLayout_4->setMenuBar(menu);
 }
 
 bool Widget::save_to_file(){
