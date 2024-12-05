@@ -7,6 +7,8 @@
 #include <QMessageBox>
 #include "semester.h"
 #include "subject.h"
+#include <QBrush>
+
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -111,9 +113,11 @@ void Widget::validate_and_set_cell(QTableWidget& table, semester& semester, int 
         case 1:
             if(dataCorrect){
                 semester[row].ects() = data;
+                table.item(row, column)->setBackground(Qt::transparent);
             }
             else{
                 table.blockSignals(true);
+                table.item(row, column)->setBackground(QBrush(QColor(235, 0, 0, 193)));
                 table.item(row, column)->setText("0");
                 table.blockSignals(false);
                 QMessageBox::warning(this, "Nieprawidłowe dane w tabeli", "Wprowadź poprawną liczbę w kolumnie ECTS.");
@@ -123,9 +127,11 @@ void Widget::validate_and_set_cell(QTableWidget& table, semester& semester, int 
         case 2:
             if(dataCorrect){
                 semester[row].grade() = data;
+                table.item(row, column)->setBackground(Qt::transparent);
             }
             else{
                 table.blockSignals(true);
+                table.item(row, column)->setBackground(QBrush(QColor(235, 0, 0, 193)));
                 table.item(row, column)->setText("0");
                 table.blockSignals(false);
                 QMessageBox::warning(this, "Nieprawidłowe dane w tabeli", "Wprowadź poprawną liczbę w kolumnie Ocena.");
