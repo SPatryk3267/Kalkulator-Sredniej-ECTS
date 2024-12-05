@@ -13,7 +13,7 @@ public:
     QString& name(){ return mName; }
     const QString& name() const{ return mName; }
     float& ects(){ return mEcts; }
-    const float& ects() const{ return mEcts; }\
+    const float& ects() const{ return mEcts; }
     float& grade(){ return mGrade; }
     const float& grade() const{ return mGrade; }
 

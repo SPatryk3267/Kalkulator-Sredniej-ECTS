@@ -19,13 +19,23 @@ public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
 
-private slots:
+
+private:
+    void setup_menu();
 
     void update_total_mean();
 
     void update_semester_one_mean();
 
     void update_semester_two_mean();
+
+    QString round_to_two_decimal(float value);
+
+    void validate_and_set_cell(QTableWidget& table, semester& semester, int row, int column);
+
+
+
+private slots:
 
     void on_semesterOneAddButton_clicked();
 
@@ -39,10 +49,7 @@ private slots:
 
     void on_semesterTwoTable_cellChanged(int row, int column);
 
-    QString round_to_two_decimal(float value);
-
-    void validate_and_set_cell(QTableWidget& table, semester& semester, int row, int column);
-
+    bool save_to_file();
 private:
     Ui::Widget *ui;
     semester semesterOne;

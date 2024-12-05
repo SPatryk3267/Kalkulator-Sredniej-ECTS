@@ -14,6 +14,8 @@ public:
     void remove(size_t index);
     void remove(const subject& sub);
     const float mean() const;
+    QVector<subject>& subjects() { return mSubjects; }
+    const QVector<subject>& subjects() const { return mSubjects; }
 
 private:
     QVector<subject> mSubjects;

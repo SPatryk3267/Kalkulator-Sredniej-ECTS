@@ -8,6 +8,9 @@
 #include "semester.h"
 #include "subject.h"
 #include <QBrush>
+#include <QMenuBar>
+#include <QFile>
+#include <QFileDialog>
 
 
 Widget::Widget(QWidget *parent)
@@ -24,11 +27,81 @@ Widget::Widget(QWidget *parent)
         semesterTwo.add(subject());
     }
 
+    setup_menu();
+
 }
 
 Widget::~Widget()
 {
     delete ui;
+}
+
+void Widget::setup_menu(){
+    QMenuBar *menuBar = new QMenuBar(this);
+
+    QMenu *fileMenu = menuBar->addMenu("Plik");
+    QAction *fileSaveAction = new QAction("Zapisz plik", this);
+    QAction *fileExitAction = new QAction("Zamknij", this);
+    fileMenu->addAction(fileSaveAction);
+    fileMenu->addAction(fileExitAction);
+
+
+    QMenu *editMenu = menuBar->addMenu("Edytuj");
+    QAction *editExitAction = new QAction("Zamknij", this);
+    editMenu->addAction(editExitAction);
+
+    QMenu *viewMenu = menuBar->addMenu("Widok");
+    QAction *viewExitAction = new QAction("Zamknij", this);
+    viewMenu->addAction(viewExitAction);
+
+    connect(fileExitAction, &QAction::triggered, this, &QWidget::close);
+    connect(fileSaveAction, &QAction::triggered, this, &Widget::save_to_file);
+
+
+    menuBar->setStyleSheet("QMenuBar { background-color: lightgrey; }"
+                           "QMenuBar::item { padding: 5px; }"
+                           "QMenuBar::item:selected { background-color: lightblue; }");
+}
+
+bool Widget::save_to_file(){
+    QString filePath = QFileDialog::getSaveFileName(
+        this,
+        "Zapisz plik",
+        "",
+        "Pliki csv (*.csv);;Wszystkie pliki (*.*)"
+        );
+
+    if(filePath.isEmpty()){
+        QMessageBox::warning(this, "Ostrzeżenie!", "Plik nie został zapisany");
+        return 0;
+    }
+
+    QFile file(filePath);
+
+    if(!file.open(QIODevice::WriteOnly)){
+        QMessageBox::warning(this, "Ostrzeżenie!", "Błąd otwarcia pliku,\n plik nie został zapisany");
+        file.close();
+        return 0;
+    }
+
+    QTextStream fileOut(&file);
+
+    fileOut << "semestr,przedmiot,ECTS,ocena\n";
+
+    const QVector<subject>& subjectsOne = semesterOne.subjects();
+
+    for(size_t i{}; i < subjectsOne.length(); i++){
+        fileOut << 1 << ',' << subjectsOne[i].name() << ',' << subjectsOne[i].ects() << ',' << subjectsOne[i].grade() << '\n';
+    }
+
+    const QVector<subject>& subjectsTwo = semesterTwo.subjects();
+
+    for(size_t i{}; i < subjectsTwo.length(); i++){
+        fileOut << 2 << ',' << subjectsTwo[i].name() << ',' << subjectsTwo[i].ects() << ',' << subjectsTwo[i].grade() << '\n';
+    }
+
+    file.close();
+    return 1;
 }
 
 QString Widget::round_to_two_decimal(float value){
@@ -108,11 +181,16 @@ void Widget::on_semesterTwoTable_cellChanged(int row, int column)
 void Widget::validate_and_set_cell(QTableWidget& table, semester& semester, int row, int column){
     if(table.item(row, column)){
         bool dataCorrect;
-        float data = table.item(row, column)->text().toFloat(&dataCorrect);
+        QString textData = table.item(row, column)->text();
+        float floatData = textData.toFloat(&dataCorrect);
         switch (column) {
+        case 0:
+            semester[row].name() = textData;
+
+            break;
         case 1:
-            if(dataCorrect){
-                semester[row].ects() = data;
+            if(dataCorrect && floatData <= 30){
+                semester[row].ects() = floatData;
                 table.item(row, column)->setBackground(Qt::transparent);
             }
             else{
@@ -125,8 +203,8 @@ void Widget::validate_and_set_cell(QTableWidget& table, semester& semester, int 
 
             break;
         case 2:
-            if(dataCorrect){
-                semester[row].grade() = data;
+            if(dataCorrect && floatData <= 6){
+                semester[row].grade() = floatData;
                 table.item(row, column)->setBackground(Qt::transparent);
             }
             else{
