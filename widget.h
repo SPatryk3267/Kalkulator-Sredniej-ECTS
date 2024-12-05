@@ -2,6 +2,7 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include <QTableWidget>
 #include "semester.h"
 
 QT_BEGIN_NAMESPACE
@@ -37,6 +38,10 @@ private slots:
     void on_semesterOneTable_cellChanged(int row, int column);
 
     void on_semesterTwoTable_cellChanged(int row, int column);
+
+    QString round_to_two_decimal(float value);
+
+    void validate_and_set_cell(QTableWidget& table, semester& semester, int row, int column);
 
 private:
     Ui::Widget *ui;

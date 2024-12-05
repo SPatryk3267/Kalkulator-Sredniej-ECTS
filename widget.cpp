@@ -4,6 +4,7 @@
 #include <QString>
 #include <QLocale>
 #include <QSizePolicy>
+#include <QMessageBox>
 #include "semester.h"
 #include "subject.h"
 
@@ -28,23 +29,27 @@ Widget::~Widget()
     delete ui;
 }
 
+QString Widget::round_to_two_decimal(float value){
+    return QString::number(roundf((value) * 100) / 100);
+}
+
 void Widget::update_total_mean(){
 
-    ui->meanResultSemesterBothLabel->setText(QString::number(roundf((semesterOne.mean() + semesterTwo.mean()) * 100) / 100 / 2));
+    ui->meanResultSemesterBothLabel->setText(round_to_two_decimal((semesterOne.mean() + semesterTwo.mean()) / 2) );
 
 }
 
 
 void Widget::update_semester_one_mean(){
 
-    ui->meanResultSemesterOneLabel->setText(QString::number(roundf((semesterOne.mean()) * 100) / 100));
+    ui->meanResultSemesterOneLabel->setText(round_to_two_decimal(semesterOne.mean()));
     update_total_mean();
 
 }
 
 void Widget::update_semester_two_mean(){
 
-    ui->meanResultSemesterTwoLabel->setText(QString::number(roundf((semesterTwo.mean()) * 100) / 100));
+    ui->meanResultSemesterTwoLabel->setText(round_to_two_decimal(semesterTwo.mean()));
     update_total_mean();
 
 }
@@ -79,30 +84,13 @@ void Widget::on_semesterTwoDeleteButton_clicked()
     if(ui->semesterTwoTable->rowCount() > 0 && ui->semesterTwoTable->currentRow() >= 0){
         semesterTwo.remove(ui->semesterTwoTable->currentRow());
         ui->semesterTwoTable->removeRow(ui->semesterTwoTable->currentRow());
-       update_semester_two_mean();
+        update_semester_two_mean();
     }
 }
 
 void Widget::on_semesterOneTable_cellChanged(int row, int column)
 {
-
-    switch (column) {
-    case 0:
-        if(ui->semesterOneTable->item(row, column)){
-            semesterOne[row].name() = ui->semesterOneTable->item(row, column)->text();
-        }
-        break;
-    case 1:
-        if(ui->semesterOneTable->item(row, column)){
-            semesterOne[row].ects() = ui->semesterOneTable->item(row, column)->text().toFloat();
-        }
-        break;
-    case 2:
-        if(ui->semesterOneTable->item(row, column)){
-            semesterOne[row].grade() = ui->semesterOneTable->item(row, column)->text().toFloat();
-        }
-        break;
-    }
+    validate_and_set_cell(*(ui->semesterOneTable), semesterOne, row, column);
 
     update_semester_one_mean();
 }
@@ -110,24 +98,40 @@ void Widget::on_semesterOneTable_cellChanged(int row, int column)
 
 void Widget::on_semesterTwoTable_cellChanged(int row, int column)
 {
-    switch (column) {
-    case 0:
-        if(ui->semesterTwoTable->item(row, column)){
-            semesterTwo[row].name() = ui->semesterTwoTable->item(row, column)->text();
-        }
-        break;
-    case 1:
-        if(ui->semesterTwoTable->item(row, column)){
-            semesterTwo[row].ects() = ui->semesterTwoTable->item(row, column)->text().toFloat();
-        }
-        break;
-    case 2:
-        if(ui->semesterTwoTable->item(row, column)){
-            semesterTwo[row].grade() = ui->semesterTwoTable->item(row, column)->text().toFloat();
-        }
-        break;
-    }
+    validate_and_set_cell(*(ui->semesterTwoTable), semesterTwo, row, column);
 
     update_semester_two_mean();;
 }
 
+void Widget::validate_and_set_cell(QTableWidget& table, semester& semester, int row, int column){
+    if(table.item(row, column)){
+        bool dataCorrect;
+        float data = table.item(row, column)->text().toFloat(&dataCorrect);
+        switch (column) {
+        case 1:
+            if(dataCorrect){
+                semester[row].ects() = data;
+            }
+            else{
+                table.blockSignals(true);
+                table.item(row, column)->setText("0");
+                table.blockSignals(false);
+                QMessageBox::warning(this, "Nieprawidłowe dane w tabeli", "Wprowadź poprawną liczbę w kolumnie ECTS.");
+            }
+
+            break;
+        case 2:
+            if(dataCorrect){
+                semester[row].grade() = data;
+            }
+            else{
+                table.blockSignals(true);
+                table.item(row, column)->setText("0");
+                table.blockSignals(false);
+                QMessageBox::warning(this, "Nieprawidłowe dane w tabeli", "Wprowadź poprawną liczbę w kolumnie Ocena.");
+            }
+
+            break;
+        }
+    }
+}
