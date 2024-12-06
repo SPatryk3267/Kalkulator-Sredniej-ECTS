@@ -11,6 +11,7 @@
 #include <QMenuBar>
 #include <QFile>
 #include <QFileDialog>
+#include <QCloseEvent>
 
 
 Widget::Widget(QWidget *parent)
@@ -103,6 +104,7 @@ bool Widget::save_to_file(){
     }
 
     file.close();
+    fileSaved = true;
     return 1;
 }
 
@@ -200,6 +202,7 @@ bool Widget::load_from_file(){
 
     ui->semesterTwoTable->blockSignals(0);
 
+    fileSaved = true;
     return 1;
 }
 
@@ -246,6 +249,7 @@ void Widget::on_semesterOneDeleteButton_clicked()
         semesterOne.remove(ui->semesterOneTable->currentRow());
         ui->semesterOneTable->removeRow(ui->semesterOneTable->currentRow());
         update_semester_one_mean();
+        fileSaved = false;
     }
 }
 
@@ -254,6 +258,7 @@ void Widget::on_semesterTwoAddButton_clicked()
 {
     ui->semesterTwoTable->insertRow(ui->semesterTwoTable->rowCount());
     semesterTwo.add(subject());
+    fileSaved = false;
 }
 
 
@@ -263,12 +268,14 @@ void Widget::on_semesterTwoDeleteButton_clicked()
         semesterTwo.remove(ui->semesterTwoTable->currentRow());
         ui->semesterTwoTable->removeRow(ui->semesterTwoTable->currentRow());
         update_semester_two_mean();
+        fileSaved = false;
     }
 }
 
 void Widget::on_semesterOneTable_cellChanged(int row, int column)
 {
     validate_and_set_cell(*(ui->semesterOneTable), semesterOne, row, column);
+    fileSaved = false;
 
     update_semester_one_mean();
 }
@@ -277,6 +284,7 @@ void Widget::on_semesterOneTable_cellChanged(int row, int column)
 void Widget::on_semesterTwoTable_cellChanged(int row, int column)
 {
     validate_and_set_cell(*(ui->semesterTwoTable), semesterTwo, row, column);
+    fileSaved = false;
 
     update_semester_two_mean();;
 }
@@ -321,4 +329,37 @@ void Widget::validate_and_set_cell(QTableWidget& table, semester& semester, int 
             break;
         }
     }
+}
+
+void Widget::closeEvent(QCloseEvent *event){
+
+    if(!fileSaved){
+        int ret = QMessageBox::warning(
+            this,
+            "Niezapisane zmiany",
+            "Masz niezapisane zmiany.\nCzy chcesz je zapisać przed zamknięciem aplikacji?",
+            QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel
+            );
+
+        switch(ret){
+        case QMessageBox::Save:
+            if(save_to_file()){
+                event->accept();
+            }
+            else{
+                event->ignore();
+            }
+
+            break;
+
+        case QMessageBox::Discard:
+            event->accept();
+            break;
+
+        case QMessageBox::Cancel:
+            event->ignore();
+            break;
+        }
+    }
+
 }

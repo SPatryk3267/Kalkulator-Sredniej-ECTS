@@ -56,9 +56,13 @@ private slots:
 
     bool load_from_file();
 
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
 private:
     Ui::Widget *ui;
     semester semesterOne;
     semester semesterTwo;
+    bool fileSaved = true;
 };
 #endif // WIDGET_H
