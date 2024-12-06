@@ -17,15 +17,13 @@ public:
     const float mean() const;
     QVector<subject>& subjects() { return mSubjects; }
     const QVector<subject>& subjects() const { return mSubjects; }
-    const size_t length() const { return subjectCount; }
+    const size_t length() const { return mSubjects.length(); }
 
     void clear() {
         mSubjects.clear();
-        subjectCount = 0;
     }
 
 private:
-    size_t subjectCount;
     QVector<subject> mSubjects;
 };
 

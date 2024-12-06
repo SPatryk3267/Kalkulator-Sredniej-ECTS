@@ -49,9 +49,9 @@ void Widget::setup_menu(QMenuBar* menu){
     fileMenu->addAction(fileExitAction);
 
 
-    QMenu *editMenu = menu->addMenu("Edytuj");
+    //QMenu *editMenu = menu->addMenu("Edytuj");
 
-    QMenu *viewMenu = menu->addMenu("Widok");
+    //QMenu *viewMenu = menu->addMenu("Widok");
 
     connect(fileExitAction, &QAction::triggered, this, &QWidget::close);
     connect(fileSaveAction, &QAction::triggered, this, &Widget::save_to_file);
