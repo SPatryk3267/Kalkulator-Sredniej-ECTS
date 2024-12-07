@@ -23,9 +23,13 @@ Widget::Widget(QWidget *parent)
     ui->semesterOneTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->semesterTwoTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    for(size_t i{}; i < 5; i++){
+    ui->semesterOneTable->setRowCount(startRowCount);
+    ui->semesterTwoTable->setRowCount(startRowCount);
+
+    for(size_t i{}; i < startRowCount; i++){
         semesterOne.add(subject());
         semesterTwo.add(subject());
+
     }
 
     QMenuBar *menuBar = new QMenuBar(this);
@@ -42,9 +46,11 @@ Widget::~Widget()
 void Widget::setup_menu(QMenuBar* menu){
 
     QMenu *fileMenu = menu->addMenu("Plik");
+    QAction *fileNewAction = new QAction("Nowy plik", this);
     QAction *fileLoadAction = new QAction("Wczytaj plik", this);
     QAction *fileSaveAction = new QAction("Zapisz plik", this);
     QAction *fileExitAction = new QAction("Zamknij", this);
+    fileMenu->addAction(fileNewAction);
     fileMenu->addAction(fileLoadAction);
     fileMenu->addAction(fileSaveAction);
     fileMenu->addAction(fileExitAction);
@@ -57,6 +63,7 @@ void Widget::setup_menu(QMenuBar* menu){
     connect(fileExitAction, &QAction::triggered, this, &QWidget::close);
     connect(fileSaveAction, &QAction::triggered, this, &Widget::save_to_file);
     connect(fileLoadAction, &QAction::triggered, this, &Widget::load_from_file);
+    connect(fileNewAction, &QAction::triggered, this, &Widget::reset_tables);
 
 
     menu->setStyleSheet("QMenuBar { background-color: #F1F0F1; }"
@@ -64,6 +71,31 @@ void Widget::setup_menu(QMenuBar* menu){
                         "QMenuBar::item:selected { background-color: lightblue; }");
 
     ui->verticalLayout_4->setMenuBar(menu);
+}
+
+void Widget::reset_tables(){
+
+    if(!fileSaved){
+        int ret = QMessageBox::question(this, "Potwierdź",
+                                        "Czy na pewno chcesz wyczyścić tabelę\nbez wcześniejszego zapisu?",
+                                        QMessageBox::Yes | QMessageBox::No);
+        if(ret == QMessageBox::Yes){
+            table_clear(ui->semesterOneTable, semesterOne);
+            table_clear(ui->semesterTwoTable, semesterTwo);
+
+            for(size_t i{}; i < startRowCount; i++){
+                semesterOne.add(subject());
+                semesterTwo.add(subject());
+            }
+
+            ui->semesterOneTable->setRowCount(startRowCount);
+            ui->semesterTwoTable->setRowCount(startRowCount);
+        }
+        else{
+            return;
+        }
+    }
+
 }
 
 bool Widget::save_to_file(){
@@ -349,7 +381,6 @@ void Widget::closeEvent(QCloseEvent *event){
             else{
                 event->ignore();
             }
-
             break;
 
         case QMessageBox::Discard:

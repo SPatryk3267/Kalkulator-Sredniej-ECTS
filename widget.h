@@ -56,6 +56,8 @@ private slots:
 
     bool load_from_file();
 
+    void reset_tables();
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 
@@ -64,5 +66,6 @@ private:
     semester semesterOne;
     semester semesterTwo;
     bool fileSaved = true;
+    size_t startRowCount = 5;
 };
 #endif // WIDGET_H
