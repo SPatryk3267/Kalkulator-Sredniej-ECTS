@@ -23,14 +23,7 @@ Widget::Widget(QWidget *parent)
     ui->semesterOneTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     ui->semesterTwoTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    ui->semesterOneTable->setRowCount(startRowCount);
-    ui->semesterTwoTable->setRowCount(startRowCount);
-
-    for(size_t i{}; i < startRowCount; i++){
-        semesterOne.add(subject());
-        semesterTwo.add(subject());
-
-    }
+    setup_tables();
 
     QMenuBar *menuBar = new QMenuBar(this);
 
@@ -73,6 +66,21 @@ void Widget::setup_menu(QMenuBar* menu){
     ui->verticalLayout_4->setMenuBar(menu);
 }
 
+void Widget::setup_tables(){
+
+    table_clear(ui->semesterOneTable, semesterOne);
+    table_clear(ui->semesterTwoTable, semesterTwo);
+
+    for(size_t i{}; i < startRowCount; i++){
+        semesterOne.add(subject());
+        semesterTwo.add(subject());
+    }
+
+    ui->semesterOneTable->setRowCount(startRowCount);
+    ui->semesterTwoTable->setRowCount(startRowCount);
+
+}
+
 void Widget::reset_tables(){
 
     if(!fileSaved){
@@ -80,20 +88,18 @@ void Widget::reset_tables(){
                                         "Czy na pewno chcesz wyczyścić tabelę\nbez wcześniejszego zapisu?",
                                         QMessageBox::Yes | QMessageBox::No);
         if(ret == QMessageBox::Yes){
-            table_clear(ui->semesterOneTable, semesterOne);
-            table_clear(ui->semesterTwoTable, semesterTwo);
 
-            for(size_t i{}; i < startRowCount; i++){
-                semesterOne.add(subject());
-                semesterTwo.add(subject());
-            }
+            setup_tables();
 
-            ui->semesterOneTable->setRowCount(startRowCount);
-            ui->semesterTwoTable->setRowCount(startRowCount);
         }
         else{
             return;
         }
+    }
+    else{
+
+        setup_tables();
+
     }
 
 }

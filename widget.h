@@ -36,6 +36,8 @@ private:
 
     void table_clear(QTableWidget* table, semester& semester);
 
+    void setup_tables();
+
 
 
 private slots:
